@@ -108,6 +108,8 @@ public class Main extends Application {
 
     private void refresh() {
 
+        System.out.printf("player coords: %d, %d\n", map.getPlayer().getX(), map.getPlayer().getY());
+
         inventoryCanvasContext.setFill(Color.BLACK);
         inventoryCanvasContext.fillRect(0, 0, inventoryCanvas.getWidth(), inventoryCanvas.getHeight());
 

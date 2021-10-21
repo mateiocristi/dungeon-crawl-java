@@ -5,16 +5,26 @@ import com.codecool.dungeoncrawl.logic.CellType;
 import com.codecool.dungeoncrawl.logic.Drawable;
 
 public abstract class Actor implements Drawable {
-    private Cell cell;
+
+    private Cell currentCell;
     private int health = 2;
 
     public Actor(Cell cell) {
-        this.cell = cell;
-        this.cell.setActor(this);
+        this.currentCell = cell;
+        this.currentCell.setActor(this);
     }
 
     public void move(int dx, int dy) {
+        Cell nextCell = currentCell.getNeighbor(dx, dy);
 
+        // check for walls
+        if (isWall(nextCell)) {
+            return;
+        }
+        // good to move
+        this.currentCell.setActor(null);
+        nextCell.setActor(this);
+        this.currentCell = nextCell;
     }
 
     public boolean isWall(Cell nextCell) {
@@ -32,15 +42,15 @@ public abstract class Actor implements Drawable {
         return health;
     }
 
-    public Cell getCell() {
-        return cell;
+    public Cell getCurrentCell() {
+        return currentCell;
     }
 
     public int getX() {
-        return cell.getX();
+        return currentCell.getX();
     }
 
     public int getY() {
-        return cell.getY();
+        return currentCell.getY();
     }
 }
