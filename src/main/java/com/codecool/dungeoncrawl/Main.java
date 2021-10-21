@@ -1,27 +1,46 @@
 package com.codecool.dungeoncrawl;
 
-import com.codecool.dungeoncrawl.logic.Cell;
-import com.codecool.dungeoncrawl.logic.GameMap;
-import com.codecool.dungeoncrawl.logic.MapLoader;
+import animatefx.animation.Bounce;
+import animatefx.animation.Shake;
+import com.codecool.dungeoncrawl.logic.*;
+import com.codecool.dungeoncrawl.logic.items.Item;
+import com.codecool.dungeoncrawl.logic.items.Weapon;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class Main extends Application {
+
+
+
+    GameUI inventoryMap = new GameUI(5, 19, CellType.FLOOR);
+    Canvas inventoryCanvas = new Canvas(
+            inventoryMap.getWidth() * Tiles.TILE_WIDTH,
+            inventoryMap.getHeight() * Tiles.TILE_WIDTH);
+    GraphicsContext inventoryCanvasContext = inventoryCanvas.getGraphicsContext2D();
+
     GameMap map = MapLoader.loadMap();
+    List<Item> weapons = map.getPlayer().getWeapons();
+
     Canvas canvas = new Canvas(
             map.getWidth() * Tiles.TILE_WIDTH,
             map.getHeight() * Tiles.TILE_WIDTH);
     GraphicsContext context = canvas.getGraphicsContext2D();
     Label healthLabel = new Label();
+    Button pickItemButton = new Button("Pick item");
 
     public static void main(String[] args) {
         launch(args);
@@ -29,12 +48,16 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
         GridPane ui = new GridPane();
         ui.setPrefWidth(200);
         ui.setPadding(new Insets(10));
+        handleUIElements(pickItemButton);
 
-        ui.add(new Label("Health: "), 0, 0);
-        ui.add(healthLabel, 1, 0);
+//        ui.add(new Label("Health: "), 0, 0);
+//        ui.add(healthLabel, 1, 0);
+        ui.add(pickItemButton, 0, 10);
+        ui.add(inventoryCanvas, 0, 2);
 
         BorderPane borderPane = new BorderPane();
 
@@ -48,6 +71,18 @@ public class Main extends Application {
 
         primaryStage.setTitle("Dungeon Crawl");
         primaryStage.show();
+    }
+
+    private void handleUIElements(Button pickItemButton) {
+        pickItemButton.setFocusTraversable(false);
+        pickItemButton.setDisable(false);
+        pickItemButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                System.out.println("clicked");
+
+            }
+        });
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
@@ -72,16 +107,48 @@ public class Main extends Application {
     }
 
     private void refresh() {
+
+        inventoryCanvasContext.setFill(Color.BLACK);
+        inventoryCanvasContext.fillRect(0, 0, inventoryCanvas.getWidth(), inventoryCanvas.getHeight());
+
         context.setFill(Color.BLACK);
         context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (int x = 0; x < map.getWidth(); x++) {
-            for (int y = 0; y < map.getHeight(); y++) {
-                Cell cell = map.getCell(x, y);
-                if (cell.getActor() != null) {
-                    Tiles.drawTile(context, cell.getActor(), x, y);
-                } else {
-                    Tiles.drawTile(context, cell, x, y);
+
+
+        int health = map.getPlayer().getHealth();
+        for (int x = 0; x < canvas.getWidth() / 4; x++) {
+            for (int y = 0; y < canvas.getHeight() / 4; y++) {
+                // display the ui
+                if (x < 5 && y < 19) {
+                    Cell cell = inventoryMap.getCell(x, y);;
+                    // health bar
+                    if (y == 0 && health > 0) {
+                        cell.setType(CellType.HEALTH);
+                        health--;
+                    }
+                    // weapon inventory
+                    if (y == 1) {
+
+                        if (x < weapons.size()) {
+                            cell.setType(((Weapon)weapons.get(x)).getType());
+
+                        }
+
+                    }
+                    Tiles.drawTile(inventoryCanvasContext, cell, x, y);
                 }
+                // display the board
+                if (x < map.getWidth() && y < map.getHeight()) {
+                    Cell cell = map.getCell(x, y);
+                    if (cell.getActor() != null) {
+                        Tiles.drawTile(context, cell.getActor(), x, y);
+                    } else if (cell.getItem() != null){
+                        Tiles.drawTile(context, cell.getItem(), x, y);
+                    } else {
+                        Tiles.drawTile(context, cell, x, y);
+                    }
+                }
+
             }
         }
         healthLabel.setText("" + map.getPlayer().getHealth());
