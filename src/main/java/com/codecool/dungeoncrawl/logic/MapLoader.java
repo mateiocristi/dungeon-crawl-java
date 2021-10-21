@@ -6,10 +6,12 @@ import com.codecool.dungeoncrawl.logic.items.Armor;
 import com.codecool.dungeoncrawl.logic.items.Weapon;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Scanner;
 
 public class MapLoader {
     public static GameMap loadMap() {
+
         InputStream is = MapLoader.class.getResourceAsStream("/map.txt");
         Scanner scanner = new Scanner(is);
         int width = scanner.nextInt();
@@ -18,6 +20,7 @@ public class MapLoader {
         scanner.nextLine(); // empty line
 
         GameMap map = new GameMap(width, height, CellType.EMPTY);
+
         for (int y = 0; y < height; y++) {
             String line = scanner.nextLine();
             for (int x = 0; x < width; x++) {
@@ -35,7 +38,9 @@ public class MapLoader {
                             break;
                         case 's':
                             cell.setType(CellType.FLOOR);
-                            cell.setActor(new Skeleton(cell));
+                            Skeleton skeleton = new Skeleton(cell);
+                            cell.setActor(skeleton);
+                            map.addSkeleton(skeleton);
                             break;
                         case 'w':
                             cell.setType(CellType.FLOOR);
@@ -48,6 +53,12 @@ public class MapLoader {
                         case 'a':
                             cell.setType(CellType.FLOOR);
                             cell.setItem(new Armor(10, cell));
+                            break;
+                        case 'd':
+                            cell.setType(CellType.DOOR);
+                            break;
+                        case 'k':
+                            cell.setType(CellType.KEY);
                             break;
                         case '@':
                             cell.setType(CellType.FLOOR);

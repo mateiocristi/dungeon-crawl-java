@@ -10,11 +10,16 @@ public class Player extends Actor {
 
     private final int MAX_ITEMS = 5;
     private List<Item> weapons;
-
+    private List<Item> armors;
+    private List<Cell> health;
 
     public Player(Cell cell) {
         super(cell);
+        setArmor(2);
+        setDamage(2);
+        setPlayer(true);
         this.weapons = new ArrayList<>(MAX_ITEMS);
+        this.armors = new ArrayList<>(MAX_ITEMS);
     }
 
 
@@ -27,14 +32,17 @@ public class Player extends Actor {
         weapons.add(item);
     }
 
+    public void pickArmor(Item item) {
+        System.out.println("will add " + item);
+        armors.add(item);
+    }
+
+    public List<Item> getArmors() {
+        return armors;
+    }
+
     public List<Item> getWeapons() {
         return weapons;
     }
 
-    private boolean isWeapon(Cell nextCell) {
-        if (nextCell.getItem() != null) {
-            return true;
-        }
-        return false;
-    }
 }

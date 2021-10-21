@@ -59,4 +59,11 @@ public class Cell implements Drawable {
     public int getY() {
         return y;
     }
+
+    public boolean isItem() {
+        if (item != null) {
+            return true;
+        }
+        return false;
+    }
 }
