@@ -11,7 +11,7 @@ public class Player extends Actor {
     private final int MAX_ITEMS = 5;
     private List<Item> weapons;
     private List<Item> armors;
-    private List<Cell> health;
+    private int currentLevel;
 
     public Player(Cell cell) {
         super(cell);
@@ -22,6 +22,13 @@ public class Player extends Actor {
         this.armors = new ArrayList<>(MAX_ITEMS);
     }
 
+    public void setCurrentLevel(int currentLevel) {
+        this.currentLevel = currentLevel;
+    }
+
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
 
     public String getTileName() {
         return "player";

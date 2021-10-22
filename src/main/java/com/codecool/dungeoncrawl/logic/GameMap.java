@@ -11,6 +11,7 @@ public class GameMap extends CellsMap{
 
     private Player player;
     private List<Skeleton> skeletons;
+    private boolean isBossDead;
     private boolean hasKey;
 
     public boolean isHasKey() {
@@ -52,4 +53,11 @@ public class GameMap extends CellsMap{
         return false;
     }
 
+    public void setBossDead() {
+        isBossDead = true;
+    }
+
+    public boolean isBossDead() {
+        return isBossDead;
+    }
 }

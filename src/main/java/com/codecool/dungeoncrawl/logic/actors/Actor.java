@@ -17,36 +17,64 @@ public abstract class Actor implements Drawable {
         this.currentCell.setActor(this);
     }
 
-    public void move(int dx, int dy) {
+    public void moveAi() {
+//        int firstRandom = (int) (Math.random() * 2);
+//        System.out.println("random " + firstRandom);
+//        if ()
+//        System.out.println("random final " + firstRandom);
+
+
+//        while (!move(firstRandom, 0)) {
+//            firstRandom = (int) (Math.random() * 2);
+//            if (firstRandom == 2) {
+//                firstRandom = -1;
+//            }
+//        }
+    }
+
+    public boolean move(int dx, int dy) {
         Cell nextCell = currentCell.getNeighbor(dx, dy);
 
         // check for wall
+
         if (isWall(nextCell)) {
-            return;
+            return false;
         }
+
+
         // check for monster
         if (isActor(nextCell)) {
             // monster have more damage than player's armor
             if (nextCell.getActor().getDamage() > currentCell.getActor().getArmor()) {
                 currentCell.getActor().setHealth(currentCell.getActor().getHealth() - 1);
                 System.out.println("monster has more damage than ur armor");
-                return;
+                return false;
             }
             // player has less damage than monster's armor
             if (nextCell.getActor().getArmor() > currentCell.getActor().getDamage()) {
                 System.out.println("monster has more armor than ur damage");
-                return;
+                return false;
             }
         }
+
         // good to move
         this.currentCell.setActor(null);
         nextCell.setActor(this);
         this.currentCell = nextCell;
+        return true;
     }
 
     public boolean isWall(Cell nextCell) {
         // wall and door
         if (nextCell.getType() == CellType.WALL || nextCell.getType() ==  CellType.DOOR) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isActor() {
+        // not null and not player
+        if (currentCell.getActor() != null) {
             return true;
         }
         return false;

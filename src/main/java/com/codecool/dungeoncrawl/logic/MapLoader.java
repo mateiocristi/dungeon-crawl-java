@@ -1,5 +1,6 @@
 package com.codecool.dungeoncrawl.logic;
 
+import com.codecool.dungeoncrawl.logic.actors.Boss;
 import com.codecool.dungeoncrawl.logic.actors.Player;
 import com.codecool.dungeoncrawl.logic.actors.Skeleton;
 import com.codecool.dungeoncrawl.logic.items.Armor;
@@ -10,9 +11,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MapLoader {
-    public static GameMap loadMap() {
+    public static GameMap loadMap(InputStream is) {
 
-        InputStream is = MapLoader.class.getResourceAsStream("/map.txt");
         Scanner scanner = new Scanner(is);
         int width = scanner.nextInt();
         int height = scanner.nextInt();
@@ -59,6 +59,11 @@ public class MapLoader {
                             break;
                         case 'k':
                             cell.setType(CellType.KEY);
+                            break;
+                        case 'b':
+                            cell.setType(CellType.FLOOR);
+                            Boss boss = new Boss(cell);
+                            cell.setActor(boss);
                             break;
                         case '@':
                             cell.setType(CellType.FLOOR);

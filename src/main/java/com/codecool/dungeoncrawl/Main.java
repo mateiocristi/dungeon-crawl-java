@@ -1,8 +1,7 @@
 package com.codecool.dungeoncrawl;
 
-import animatefx.animation.Bounce;
-import animatefx.animation.Shake;
 import com.codecool.dungeoncrawl.logic.*;
+import com.codecool.dungeoncrawl.logic.actors.Player;
 import com.codecool.dungeoncrawl.logic.actors.Skeleton;
 import com.codecool.dungeoncrawl.logic.items.Armor;
 import com.codecool.dungeoncrawl.logic.items.Item;
@@ -20,13 +19,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import javax.naming.BinaryRefAddr;
 import java.util.List;
 
 public class Main extends Application {
-
-
 
     GameUI inventoryMap = new GameUI(5, 19, CellType.EMPTY);
     Canvas inventoryCanvas = new Canvas(
@@ -34,7 +33,7 @@ public class Main extends Application {
             inventoryMap.getHeight() * Tiles.TILE_WIDTH);
     GraphicsContext inventoryCanvasContext = inventoryCanvas.getGraphicsContext2D();
 
-    GameMap map = MapLoader.loadMap();
+    GameMap map = MapLoader.loadMap(MapLoader.class.getResourceAsStream("/map.txt"));
     List<Item> weapons = map.getPlayer().getWeapons();
     List<Item> armors = map.getPlayer().getArmors();
 
@@ -42,7 +41,11 @@ public class Main extends Application {
             map.getWidth() * Tiles.TILE_WIDTH,
             map.getHeight() * Tiles.TILE_WIDTH);
     GraphicsContext context = canvas.getGraphicsContext2D();
-    Label healthLabel = new Label();
+
+    Player player = map.getPlayer();
+
+    Label statusLabel = new Label();
+    Text text = new Text();
     Button pickItemButton = new Button("Pick item");
 
     public static void main(String[] args) {
@@ -52,13 +55,17 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        player.setCurrentLevel(1);
+        text.setVisible(false);
+        statusLabel.setVisible(false);
+
         GridPane ui = new GridPane();
         ui.setPrefWidth(200);
         ui.setPadding(new Insets(10));
         handleUIElements(pickItemButton);
 
-//        ui.add(new Label("Health: "), 0, 0);
-//        ui.add(healthLabel, 1, 0);
+        ui.add(text, 0, 0);
+        ui.add(statusLabel, 1, 0);
         ui.add(pickItemButton, 0, 10);
         ui.add(inventoryCanvas, 0, 2);
 
@@ -119,6 +126,10 @@ public class Main extends Application {
                 } else {
                     pickItemButton.setDisable(true);
                 }
+                if (map.getPlayer().getCurrentCell().getType() == CellType.KEY) {
+                    map.setHasKey(true);
+                    map.getPlayer().getCurrentCell().setType(CellType.EMPTY);
+                }
                 refresh();
                 break;
             case LEFT:
@@ -127,6 +138,10 @@ public class Main extends Application {
                     pickItemButton.setDisable(false);
                 } else {
                     pickItemButton.setDisable(true);
+                }
+                if (map.getPlayer().getCurrentCell().getType() == CellType.KEY) {
+                    map.setHasKey(true);
+                    map.getPlayer().getCurrentCell().setType(CellType.EMPTY);
                 }
                 refresh();
                 break;
@@ -137,6 +152,10 @@ public class Main extends Application {
                 } else {
                     pickItemButton.setDisable(true);
                 }
+                if (map.getPlayer().getCurrentCell().getType() == CellType.KEY) {
+                    map.setHasKey(true);
+                    map.getPlayer().getCurrentCell().setType(CellType.EMPTY);
+                }
                 refresh();
                 break;
         }
@@ -144,14 +163,29 @@ public class Main extends Application {
 
     private void refresh() {
 
+        if (text.getText().equals("YOU LOST") || text.getText().equals("YOU WON")) {
+            return;
+        }
+
         inventoryCanvasContext.setFill(Color.BLACK);
         inventoryCanvasContext.fillRect(0, 0, inventoryCanvas.getWidth(), inventoryCanvas.getHeight());
 
         context.setFill(Color.BLACK);
         context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
+        for (Skeleton skeleton: map.getSkeletons()) {
+            if (skeleton != null) {
+                skeleton.moveAi();
+            }
+        }
+
         int health = map.getPlayer().getHealth();
-        System.out.println("health is " + health);
+        if (health <= 0) {
+            text.setText("YOU LOST");
+            text.setVisible(true);
+
+        }
+//        System.out.println("health is " + health);
         for (int x = 0; x < canvas.getWidth() / 4; x++) {
             for (int y = 0; y < canvas.getHeight() / 4; y++) {
                 // display the ui
@@ -203,11 +237,25 @@ public class Main extends Application {
                         cell.setType(CellType.OPEN);
                         Tiles.drawTile(context, cell, x, y);
                     }
+                    if (cell.getType() == CellType.OPEN && map.getPlayer().getCurrentCell() == cell) {
+                        map = MapLoader.loadMap(MapLoader.class.getResourceAsStream("/map_1.txt"));
+                        weapons = map.getPlayer().getWeapons();
+                        armors = map.getPlayer().getArmors();
+                        map.getPlayer().setCurrentLevel(player.getCurrentLevel() + 1);
+                        player = map.getPlayer();
+                        //winning conditions
+                        System.out.println("lvl");
+                        System.out.println(player.getCurrentLevel());
+                        if (player.getCurrentLevel() == 2 + 1) {
+                            System.out.println("you win");
+                            text.setVisible(true);
+                            text.setText("YOU WON");
+                        }
+                    }
 
                 }
 
             }
         }
-        healthLabel.setText("" + map.getPlayer().getHealth());
     }
 }

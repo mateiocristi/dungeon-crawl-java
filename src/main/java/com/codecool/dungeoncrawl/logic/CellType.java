@@ -12,7 +12,8 @@ public enum CellType {
     AXE("axe"),
     DOOR("door"),
     OPEN("open"),
-    KEY("key");
+    KEY("key"),
+    BOSS("boss");
 
     private final String tileName;
 
