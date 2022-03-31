@@ -6,8 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="dungeon-crawl" />
+        <module name="dungeon-crawl-java" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="dungeon-crawl-java" target="1.11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
