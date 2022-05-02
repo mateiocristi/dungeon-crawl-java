@@ -1,10 +1,10 @@
-##Dungeon Crawl
+## Dungeon Crawl
 
-##What is it?
+## What is it?
 
 Dungeon crawl is a rogue like game where the main character(player) have to explore some underground caves and get out alive.
 
-##Features:
+## Features:
 
 -Game interface with javafx
 
@@ -22,12 +22,14 @@ Player movement using "WASD" keys
 
 -There are armors that increase the player's armor
 
-##Technologies used:
+## Technologies used:
 
 -Java 
 
+-JDBC
+
 -JavaFx
 
-#Diagram:
+## Diagram:
 
 ![img.png](img.png)
