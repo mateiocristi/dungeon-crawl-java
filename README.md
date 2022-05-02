@@ -8,9 +8,9 @@ Dungeon crawl is a rogue like game where the main character(player) have to expl
 
 -Game interface with javafx
 
-Player movement using "WASD" keys
+-Player movement using "WASD" keys
 
--The player has 10 lives
+-Player has 10 lives
 
 -There is an inventory where found items and keys can be stored
 
@@ -21,6 +21,8 @@ Player movement using "WASD" keys
 -There are weapons that increase the player's damage
 
 -There are armors that increase the player's armor
+
+-The game ends when the player completes all the levels
 
 ## Technologies used:
 
